@@ -9,9 +9,15 @@ import langchain_helper as lh
 st.set_page_config(page_title="Infant Care Bot", page_icon="👶")
 st.title("Infant Care Bot")
 
+with st.sidebar:
+    option = st.selectbox(
+        'Tone of Voice',
+        ('Default', 'Father-Speak', 'Mother-Speak')
+    )
+
 if "chat_history" not in st.session_state:
     st.session_state.chat_history = [
-        AIMessage(content="Ask me anything about your baby?"),
+        AIMessage(content="Ask me anything about your baby"),
     ]
 
 for message in st.session_state.chat_history:
@@ -34,7 +40,11 @@ if user_query is not None and user_query != "":
 
     with st.chat_message("AI"):
         response = st.write_stream(
-            lh.get_query_resp(user_query, st.session_state.chat_history)
+            lh.get_query_resp(
+                user_query,
+                st.session_state.chat_history,
+                option
+            )
         )
     
     st.session_state.chat_history.append(
