@@ -60,7 +60,7 @@ You should try to stick to the context as much as possible.
 The context is in a particular format but you should NOT mimic the style. 
 You should always answer the question using normal language with professionality.
 The user are new parents and may not have professional knowledge. So you can try to paraphrase the answer to make it more understandable to the user.
-In the end of your answer, include ONLY the file name and page number of the source. For example: "Source: file_name.pdf, page 5".
+In the end of your answer, include ONLY the file name and page number of the source. For example: "Source: some_file.pdf, page 5".
 Context: {context}
 Chat history: {chat_history}
 Question: {question}

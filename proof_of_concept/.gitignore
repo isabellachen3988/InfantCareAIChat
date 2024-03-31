@@ -4,8 +4,8 @@ gemma-7b.gguf
 llama-2-7b-chat.Q4_0.gguf
 
 # data and embeddings
-data/
-embeddings/
+data/*
+embeddings/*
 *.json
 
 # Byte-compiled / optimized / DLL files

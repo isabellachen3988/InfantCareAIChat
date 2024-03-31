@@ -30,19 +30,22 @@ if user_query is not None and user_query != "":
 
     # write with AI
     with st.chat_message("AI"):
-        response = lh.get_query_resp(
-            user_query,
-            st.session_state.chat_history
-        )
-        if response is None or len(response) == 0:
+        try:
             response = lh.get_query_resp(
                 user_query,
-                st.session_state.chat_history,
-                use_backup=True
+                st.session_state.chat_history
             )
-            print("Using backup....")
-        if response is None or len(response) == 0:
-            response = "Sorry, I don't have an answer for that. Please try again."
+            if response is None or len(response) == 0:
+                response = lh.get_query_resp(
+                    user_query,
+                    st.session_state.chat_history,
+                    use_backup=True
+                )
+                print("Using backup....")
+            if response is None or len(response) == 0:
+                response = "Sorry, I don't have an answer for that. Please try again."
+        except Exception:
+            response = "Sorry, an exception occured. Please try again."
         st.write(response)
     st.session_state.chat_history.append(
         HumanMessage(content=user_query)
