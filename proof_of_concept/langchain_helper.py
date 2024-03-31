@@ -24,39 +24,21 @@ from langchain.schema import (
     HumanMessage,
     SystemMessage
 )
-from enum_helper import Tone
 
 from operator import itemgetter
 
 load_dotenv()
 
-# temperature: randomness of the outcome or how creative you want your model to be
 def get_query_resp(
         question,
-        chat_history,
-        tone
+        chat_history
     ):
 
     tic = time.perf_counter()
-
-    tone_template = ""
-    if (tone == Tone.FATHER_SPEAK):
-        tone_template = """
-            Your job is to use the following context to answer questions
-            to a father about how to take care of a baby. 
-            Please use references to to motor vehicles:
-        """
-    elif (tone == Tone.MOTHER_SPEAK):
-        tone_template = """
-            Your job is to use the following context to answer questions
-            to a mother about how to take care of a baby. 
-            Please use references that a mother would understand:
-        """
     
     input_obj = {
         "question": question,
-        "chat_history": chat_history,
-        "tone": tone_template
+        "chat_history": chat_history
     }
 
     embedding = pph.EmbeddingStore.load_embeddings('embedding', 'embeddings')
@@ -115,36 +97,7 @@ def get_query_resp(
         | StrOutputParser()
     )
 
-    if (tone == Tone.DEFAULT):
-        response = chain.invoke(input_obj)
-    else:
-        tone_prompt = ChatPromptTemplate.from_template(
-            """
-            {tone}
-
-            {information}
-
-            Response:
-            """
-        )
-
-        tone_prompt_chain = (
-            {
-                "information": chain,
-                "tone": itemgetter("tone"),
-            }
-            | tone_prompt
-        )
-
-        # print(tone_prompt_chain.invoke(input_obj))
-
-        tone_chain = (
-            tone_prompt_chain
-            | vertex_llm_text
-            | StrOutputParser()
-        )
-
-        response = tone_chain.stream(input_obj)
+    response = chain.invoke(input_obj)
 
     toc = time.perf_counter()
     print(f"response time: {toc - tic:0.2f} seconds")
