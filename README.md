@@ -14,5 +14,4 @@ Under `proof_of_concept` folder
 
 ...and have fun!
 
-![image](https://github.com/isabellachen3988/InfantCareAIChat/assets/50829041/a7add187-be28-46d2-9b0c-a9978925cd87)
-
+![image](https://github.com/isabellachen3988/InfantCareAIChat/assets/50829041/d3e6644a-5f90-4a1d-be1c-7068092d063a)
