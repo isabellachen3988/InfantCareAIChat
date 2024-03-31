@@ -11,7 +11,7 @@ st.title("Infant Care Bot")
 
 if "chat_history" not in st.session_state:
     st.session_state.chat_history = [
-        AIMessage(content="Ask me anything about your baby?"),
+        AIMessage(content="Ask me anything about your baby"),
     ]
 
 for message in st.session_state.chat_history:
@@ -25,18 +25,19 @@ for message in st.session_state.chat_history:
 user_query = st.chat_input("Type your message...")
 
 if user_query is not None and user_query != "":
-    st.session_state.chat_history.append(
-        HumanMessage(content=user_query)
-    )
-
     with st.chat_message("Human"):
         st.markdown(user_query)
 
+    # write with AI
     with st.chat_message("AI"):
-        response = st.write_stream(
-            lh.get_query_resp(user_query, st.session_state.chat_history)
+        response = lh.get_query_resp(
+            user_query,
+            st.session_state.chat_history
         )
-    
+        st.write(response)
+    st.session_state.chat_history.append(
+        HumanMessage(content=user_query)
+    )
     st.session_state.chat_history.append(
         AIMessage(content=response)
     )
