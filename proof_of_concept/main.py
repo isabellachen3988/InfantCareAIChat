@@ -11,7 +11,7 @@ st.title("Infant Care Bot")
 
 if "chat_history" not in st.session_state:
     st.session_state.chat_history = [
-        AIMessage(content="Ask me anything about your baby"),
+        AIMessage(content="Ask me questions about post partum or your baby under 6 months of age"),
     ]
 
 for message in st.session_state.chat_history:
