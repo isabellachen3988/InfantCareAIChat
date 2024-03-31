@@ -38,12 +38,7 @@ def get_query_resp(
     ):
 
     tic = time.perf_counter()
-    embedding = pph.EmbeddingStore.load_embeddings('embedding', 'embeddings')
 
-    # special object in langchain that you can use for information retrieval
-    # k = 3 means get my three similar documents??
-    retriever = embedding.as_retriever(search_kwargs={"k": 3})
-    # retriever = embedding.as_retriever()
     tone_template = ""
     if (tone == Tone.FATHER_SPEAK):
         tone_template = """
@@ -57,11 +52,23 @@ def get_query_resp(
             to a mother about how to take care of a baby. 
             Please use references that a mother would understand:
         """
+    
+    input_obj = {
+        "question": question,
+        "chat_history": chat_history,
+        "tone": tone_template
+    }
+
+    embedding = pph.EmbeddingStore.load_embeddings('embedding', 'embeddings')
+
+    # special object in langchain that you can use for information retrieval
+    # k = 3 means get my three similar documents??
+    retriever = embedding.as_retriever(search_kwargs={"k": 3})
 
     prompt = PromptTemplate(
         template =  """
             Your job is to use the following context to answer questions 
-            about a how to take care of a baby:
+            about a how to take care of a baby. If answer does not exist, say that you don't know:
 
             {context}
 
@@ -69,6 +76,8 @@ def get_query_resp(
 
             Question: {question}
 
+            The context is in a particular format but you should NOT mimic the style. 
+            You should always answer the question using normal language with professionality.
             Here is the answer:
         """,
         input_variables=[
@@ -106,32 +115,28 @@ def get_query_resp(
         | StrOutputParser()
     )
 
-    input_obj = {
-        "question": question,
-        "chat_history": chat_history,
-        "tone": tone_template
-    }
-
     if (tone == Tone.DEFAULT):
-        response = chain.stream(input_obj)
+        response = chain.invoke(input_obj)
     else:
         tone_prompt = ChatPromptTemplate.from_template(
             """
             {tone}
 
             {information}
+
+            Response:
             """
         )
 
         tone_prompt_chain = (
             {
                 "information": chain,
-                "tone": itemgetter("tone")
+                "tone": itemgetter("tone"),
             }
             | tone_prompt
         )
 
-        print(tone_prompt_chain.invoke(input_obj))
+        # print(tone_prompt_chain.invoke(input_obj))
 
         tone_chain = (
             tone_prompt_chain

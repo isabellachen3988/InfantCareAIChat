@@ -5,15 +5,19 @@ from dotenv import load_dotenv
 from langchain_core.output_parsers import StrOutputParser
 from langchain_core.prompts import ChatPromptTemplate
 import langchain_helper as lh
+import enum_helper as eh
+
+human_chat_history = []
 
 st.set_page_config(page_title="Infant Care Bot", page_icon="👶")
 st.title("Infant Care Bot")
 
-with st.sidebar:
-    option = st.selectbox(
-        'Tone of Voice',
-        ('Default', 'Father-Speak', 'Mother-Speak')
-    )
+option = eh.Tone.DEFAULT
+# with st.sidebar:
+#     option = st.selectbox(
+#         'Tone of Voice',
+#         ('Default', 'Father-Speak', 'Mother-Speak')
+#     )
 
 if "chat_history" not in st.session_state:
     st.session_state.chat_history = [
@@ -34,19 +38,19 @@ if user_query is not None and user_query != "":
     st.session_state.chat_history.append(
         HumanMessage(content=user_query)
     )
+    human_chat_history.append(user_query)
 
     with st.chat_message("Human"):
         st.markdown(user_query)
 
+    # write with AI
     with st.chat_message("AI"):
-        response = st.write_stream(
-            lh.get_query_resp(
-                user_query,
-                st.session_state.chat_history,
-                option
-            )
+        response = lh.get_query_resp(
+            user_query,
+            human_chat_history,
+            option
         )
-    
+        st.write(response)
     st.session_state.chat_history.append(
         AIMessage(content=response)
     )
