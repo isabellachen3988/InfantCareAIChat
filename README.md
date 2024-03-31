@@ -13,3 +13,6 @@ Under `proof_of_concept` folder
 6. Start the app by running `streamlit run main.py`
 
 ...and have fun!
+
+![image](https://github.com/isabellachen3988/InfantCareAIChat/assets/50829041/a7add187-be28-46d2-9b0c-a9978925cd87)
+
