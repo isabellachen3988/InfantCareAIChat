@@ -31,7 +31,8 @@ load_dotenv()
 
 def get_query_resp(
         question,
-        chat_history
+        chat_history,
+        use_backup=False
     ):
 
     tic = time.perf_counter()
@@ -41,7 +42,9 @@ def get_query_resp(
         "chat_history": chat_history
     }
 
-    embedding = pph.EmbeddingStore.load_embeddings('embedding', 'embeddings')
+    embedding_name = 'embedding' if not use_backup else 'embedding_small'
+
+    embedding = pph.EmbeddingStore.load_embeddings(embedding_name, 'embeddings')
 
     # special object in langchain that you can use for information retrieval
     # k = 3 means get my three similar documents??
@@ -57,7 +60,7 @@ You should try to stick to the context as much as possible.
 The context is in a particular format but you should NOT mimic the style. 
 You should always answer the question using normal language with professionality.
 The user are new parents and may not have professional knowledge. So you can try to paraphrase the answer to make it more understandable to the user.
-The context includes the file and page number in the file. In the end of your answer, you should always provide the source of the information.
+In the end of your answer, include ONLY the file name and page number of the source. For example: "Source: file_name.pdf, page 5".
 Context: {context}
 Chat history: {chat_history}
 Question: {question}
@@ -77,9 +80,7 @@ Here is the answer:
     
     vertex_llm_text = VertexAI(
         model_name="gemini-pro",
-        temperature=0.7,
-        top_p=0.8,
-        top_k=40,
+        temperature=0.9
     )
 
     prompt_chain = (
@@ -104,6 +105,7 @@ Here is the answer:
     print(f'Chat history: {chat_history}')
     print(retriever.get_relevant_documents(question))
     print(f"response time: {toc - tic:0.2f} seconds")
+    print(response)
     return response
 
 if __name__ == "__main__":
