@@ -39,18 +39,21 @@ def get_query_resp(question, chat_history):
     retriever = embedding.as_retriever(search_kwargs={"k": 3})
     # retriever = embedding.as_retriever()
     prompt = PromptTemplate(
-        template =  """
-            Your job is to use the following context to answer questions 
-            about a how to take care of a baby
-
-            {context}
-
-            Chat history: {chat_history}
-
-            Question: {question}
-
-            Here is the answer:
-        """,
+        template =  
+"""
+You are a professional expertise with acurate knowledge on infant cares.
+Your job is to use the following context to answer questions about a how to take care of a baby.
+The context provided are from academic researches and are highly reliable. 
+You should try to stick to the context as much as possible.
+The context is in a particular format but you should NOT mimic the style. 
+You should always answer the question using normal language with professionality.
+The user are new parents and may not have professional knowledge. So you can try to paraphrase the answer to make it more understandable to the user.
+The context includes the file and page number in the file. In the end of your answer, you should always provide the source of the information.
+Context: {context}
+Chat history: {chat_history}
+Question: {question}
+Here is the answer:
+""",
         input_variables=["context", "chat_history", "question"]
     )
 
@@ -58,13 +61,16 @@ def get_query_resp(question, chat_history):
         [SystemMessagePromptTemplate(prompt=prompt)]
     )
 
-    os.environ['GOOGLE_APPLICATION_CREDENTIALS'] = 'hackathon2024-418700-f6f2fc9a356f.json'
+    os.environ['GOOGLE_APPLICATION_CREDENTIALS'] = 'hackathon2024-418700-0ae5baa3a912.json'
     vertexai.init(
         project="hackathon2024-418700",
     )
     
     vertex_llm_text = VertexAI(
-        model_name="gemini-pro"
+        model_name="gemini-pro",
+        temperature=0.7,
+        top_p=0.8,
+        top_k=40,
     )
 
     # memory = ConversationBufferMemory(memory_key="chat_history", return_messages=True)
@@ -97,8 +103,12 @@ def get_query_resp(question, chat_history):
             "chat_history": chat_history
         }
     )
+    breakpoint()
 
     toc = time.perf_counter()
+    print(f'Question: {question}')
+    print(f'Chat history: {chat_history}')
+    print(retriever.get_relevant_documents(question))
     print(f"response time: {toc - tic:0.2f} seconds")
     return response
 
@@ -130,7 +140,7 @@ if __name__ == "__main__":
         [SystemMessagePromptTemplate(prompt=prompt)]
     )
 
-    os.environ['GOOGLE_APPLICATION_CREDENTIALS'] = 'hackathon2024-418700-f6f2fc9a356f.json'
+    os.environ['GOOGLE_APPLICATION_CREDENTIALS'] = 'hackathon2024-418700-0ae5baa3a912.json'
     vertexai.init(
         project="hackathon2024-418700",
     )
